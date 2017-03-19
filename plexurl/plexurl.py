@@ -231,6 +231,25 @@ def lookup_episode(server, show, episode):
             info("No results")
             return 50
 
+
+def get_url(movie, direct=False, curl=False):
+    """movie = lookup_movie(server, args.name)"""
+
+    if not direct:
+        # transcode url
+        return movie.getStreamURL()
+    # direct url
+    for i in movie.iterParts():
+        # when would this be more than one?
+        fname = os.path.split(i.file)[1]
+        if str(movie.year) not in fname:
+          fname, fext = os.path.splitext(fname)
+          fname = "{}-{}{}".format(fname, movie.year, fext)
+        if curl:
+            return("curl '{}' -o '{}'".format(i.server.url(i.key), fname))
+        return i.server.url(i.key)
+
+
 def main_movie(server, args):
     """ Convenience function for printing movie stream url
 
@@ -241,11 +260,12 @@ def main_movie(server, args):
     """
 
     if args.name:
-        print(lookup_movie(server, args.name).getStreamURL())
+        print(get_url(lookup_movie(server, args.name), direct=args.direct, curl=args.curl))
     else:
         selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section("Movies").all()], "Select a movie: ")
         if selection:
-            print(lookup_movie(server, selection).getStreamURL())
+            #print(lookup_movie(server, selection).getStreamURL())
+            print(get_url(lookup_movie(server, selection), direct=args.direct, curl=args.curl))
 
 def main_show(server, args):
     """ Convenience function for printing show names
@@ -285,6 +305,8 @@ def main_episode(server, show, episode, resolution="1280x720"):
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
     parser.add_argument("-m", "--movie", help="Specify movie.", action="store_true")
+    parser.add_argument("-d", "--direct", help="Direct download.  Default returns a transcode url", action="store_true", default=False)
+    parser.add_argument("-c", "--curl", help="curl output.  Default off.", action="store_true", default=False)
     parser.add_argument("-s", "--show", help="Specify show.", action="store_true")
     parser.add_argument("--name", help="Name of movie or show. Use with -m or -s respectively. Omit to produce listing")
     parser.add_argument("-e", "--episode", help="Specify episode. Get list of episodes by specifying show. Supports either full episode name (which may conflict) or SnnEnn (i.e S12E34)")
