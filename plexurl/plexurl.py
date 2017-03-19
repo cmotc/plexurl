@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from plexapi.server import PlexServer
-from plexapi.myplex import MyPlexUser
+from plexapi.myplex import MyPlexUser, MyPlexAccount
 from plexapi.exceptions import NotFound
 from plexapi.video import Show
 
@@ -136,12 +136,23 @@ def get_server(uri=DEFAULT_URI, username=None, password=None, servername=None):
         info("Could not get server object, maybe you need to be authenticated?")
     username = username if username else os.environ.get("PLEX_USERNAME", None) or prompt("Plex username: ")
     password = password if password else os.environ.get("PLEX_PASSWORD", None) or getpass("Plex password: ")
-    user = MyPlexUser.signin(username, password)
+    user = MyPlexAccount.signin(username, password)
     if not servername:
         info("Servers: " + ", ".join(a.name for a in user.resources()))
         servername = prompt("Please enter server name (or specify with --servername). If you don't know it, press enter and I'll (very slowly!) search for the correct server: ") or None
+
     if servername:
-        return user.getResource(servername).connect()
+
+        server = user.resource(servername)
+        for i in server.connections:
+            if not i.local:
+                baseurl=i.uri
+                token = server.accessToken
+
+                plex = PlexServer(baseurl, token)
+
+        return plex
+
     else:
         info("OK, beginning the search process.")
     # necessary to match correct server
@@ -230,11 +241,11 @@ def main_movie(server, args):
     """
 
     if args.name:
-        print(lookup_movie(server, args.name).getStreamUrl())
+        print(lookup_movie(server, args.name).getStreamURL())
     else:
-        selection = choose(["{}".format(movie.title) for movie in server.library.section("Movies").all()], "Select a movie: ")
+        selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section("Movies").all()], "Select a movie: ")
         if selection:
-            print(lookup_movie(server, selection).getStreamUrl())
+            print(lookup_movie(server, selection).getStreamURL())
 
 def main_show(server, args):
     """ Convenience function for printing show names
@@ -265,11 +276,11 @@ def main_episode(server, show, episode, resolution="1280x720"):
     """
 
     if episode:
-        print(lookup_episode(server, show, episode).getStreamUrl())
+        print(lookup_episode(server, show, episode).getStreamURL())
     else:
         selection = choose(["S{}E{} {}".format(ep.parentIndex.zfill(2), ep.index.zfill(2), truncate(ep.title)) for ep in server.library.section("TV Shows").get(show).episodes()], "Select an episode: ")
         if selection:
-            print(lookup_episode(server, show, selection).getStreamUrl(videoResolution=resolution))
+            print(lookup_episode(server, show, selection).getStreamURL(videoResolution=resolution))
 
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
