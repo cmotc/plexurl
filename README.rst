@@ -8,12 +8,15 @@ Usage
 
 ::
 
-    usage: plexurl [-h] [-m] [-s] [--name NAME] [-e EPISODE] [-S SERVER]
+    usage: plexurl [-h] [-m] [-d] [-c] [-s] [--name NAME] [-e EPISODE] [-S SERVER]
                    [-u USERNAME] [-p PASSWORD] [--servername SERVERNAME]
+                   [-r RESOLUTION]
 
     optional arguments:
       -h, --help            show this help message and exit
       -m, --movie           Specify movie.
+      -d, --direct          Direct download. Default returns a transcode url
+      -c, --curl            curl output. Default off.
       -s, --show            Specify show.
       --name NAME           Name of movie or show. Use with -m or -s respectively.
                             Omit to produce listing
@@ -34,6 +37,9 @@ Usage
       --servername SERVERNAME
                             Specify server name. Used with -u above, for Plex
                             authentication. $PLEX_SERVERNAME
+      -r RESOLUTION, --resolution RESOLUTION
+                            Specify resolution. Should be of format WIDTHxHEIGHT.
+                            Defaults to 1280x720, or Plex's default
 
 Installation
 ------------
