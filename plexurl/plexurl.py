@@ -13,12 +13,10 @@ except ImportError:
     from urllib.parse import urlparse
 from getpass import getpass
 from socket import gethostbyname
-from pydoc import pager
 
 import sys
 import os
 import re
-import shutil
 import argparse
 
 DEFAULT_URI = "http://127.0.0.1:32400"
@@ -42,6 +40,7 @@ def get_terminal_size(width=80, height=25, fd=1):
         except:
             wh = (25, 80)
     return wh
+
 
 def print_multicolumn(alist):
     """Formats a list into columns to fit on screen. Similar to `ls`. From http://is.gd/6dwsuA (daniweb snippet, search for func name)
@@ -70,6 +69,7 @@ def print_multicolumn(alist):
         t.add_row(c)
     print(t)
 
+
 def truncate(text, chars=30, ending="..."):
     """ Truncates text longer than CHARS chars
 
@@ -81,6 +81,7 @@ def truncate(text, chars=30, ending="..."):
     """
 
     return text if len(text) < 30 else text[:25] + "..."
+
 
 def choose(options, q):
     """ Displays multi-column interface, with a prompt if terminal is interactive
@@ -96,6 +97,7 @@ def choose(options, q):
     if os.isatty(sys.stdout.fileno()):
         return prompt(q)
 
+
 def info(*objs):
     """ Print message to stderr to avoid interfering with pipeline
 
@@ -103,6 +105,7 @@ def info(*objs):
     """
 
     print(*objs, file=sys.stderr)
+
 
 def prompt(*objs):
     """ Print input() prompt to stderr to avoid interfering with pipeline
@@ -116,6 +119,7 @@ def prompt(*objs):
         return input(*objs)
     finally:
         sys.stdout = old_stdout
+
 
 def get_server(uri=DEFAULT_URI, username=None, password=None, servername=None):
     """ Get Plex server object for further processing.
@@ -173,6 +177,7 @@ def get_server(uri=DEFAULT_URI, username=None, password=None, servername=None):
             info("Couldn't connect to {}".format(srv.name))
     info("Couldn't find server in your user's server list.")
     return 10
+
 
 def lookup_movie(server, movie):
     """ Retrieves movie object from specified server.
@@ -264,7 +269,6 @@ def main_movie(server, args):
     else:
         selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section("Movies").all()], "Select a movie: ")
         if selection:
-            #print(lookup_movie(server, selection).getStreamURL())
             print(get_url(lookup_movie(server, selection), direct=args.direct, curl=args.curl))
 
 def main_show(server, args):
