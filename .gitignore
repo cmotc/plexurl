@@ -1,6 +1,8 @@
+*.egg-info/
 *.m4a
 *.pyc
-env/
+.idea
 build/
 dist/
-*.egg-info/
+env/
+venv/
