@@ -312,7 +312,6 @@ def main_episode(server, show, episode, library=None, resolution="1280x720"):
 
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
-    parser.add_argument("-h", "--help", help="Specify movie.", action="store_true")
     parser.add_argument("-m", "--movie", help="Specify movie.", action="store_true")
     parser.add_argument("-s", "--show", help="Specify show.", action="store_true")
     parser.add_argument("--name", help="Name of movie or show. Use with -m or -s respectively. Omit to produce listing")
