@@ -179,7 +179,7 @@ def get_server(uri=DEFAULT_URI, username=None, password=None, servername=None):
     return 10
 
 
-def lookup_movie(server, movie):
+def lookup_movie(server, movie, library=None):
     """ Retrieves movie object from specified server.
 
     :param server: Plex server object, probably returned by get_server()
@@ -189,13 +189,15 @@ def lookup_movie(server, movie):
     :returns: Movie object
     :rtype: plexapi.video.Movie
     """
+    if not library:
+        library="Movies"
 
     try:
-        return server.library.section("Movies").get(movie)
+        return server.library.section(library).get(movie)
     except NotFound:
-        results = server.library.section("Movies").search(movie)
+        results = server.library.section(library).search(movie)
         if results:
-            return server.library.section("Movies").get(choose(results, "Select a movie: "))
+            return server.library.section(library).get(choose(results, "Select a movie: "))
         else:
             info("No results")
             return 50
@@ -237,7 +239,7 @@ def lookup_episode(server, show, episode):
             return 50
 
 
-def get_url(movie, direct=False, curl=False):
+def get_url(movie, direct=False, curl=False, library="Movies"):
     """movie = lookup_movie(server, args.name)"""
 
     if not direct:
@@ -265,11 +267,11 @@ def main_movie(server, args):
     """
 
     if args.name:
-        print(get_url(lookup_movie(server, args.name), direct=args.direct, curl=args.curl))
+        print(get_url(lookup_movie(server, args.name, library=args.library), direct=args.direct, curl=args.curl))
     else:
         selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section("Movies").all()], "Select a movie: ")
         if selection:
-            print(get_url(lookup_movie(server, selection), direct=args.direct, curl=args.curl))
+            print(get_url(lookup_movie(server, selection, library=args.library), direct=args.direct, curl=args.curl))
 
 def main_show(server, args):
     """ Convenience function for printing show names
@@ -309,9 +311,10 @@ def main_episode(server, show, episode, resolution="1280x720"):
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
     parser.add_argument("-m", "--movie", help="Specify movie.", action="store_true")
+    parser.add_argument("-s", "--show", help="Specify show.", action="store_true")
+    parser.add_argument("-u", "--username", help="Specify non-default library name. Still requires -s or -m. $PLEX_LIBRARY", default=os.environ.get("PLEX_LIBRARY", None))
     parser.add_argument("-d", "--direct", help="Direct download.  Default returns a transcode url", action="store_true", default=False)
     parser.add_argument("-c", "--curl", help="curl output.  Default off.", action="store_true", default=False)
-    parser.add_argument("-s", "--show", help="Specify show.", action="store_true")
     parser.add_argument("--name", help="Name of movie or show. Use with -m or -s respectively. Omit to produce listing")
     parser.add_argument("-e", "--episode", help="Specify episode. Get list of episodes by specifying show. Supports either full episode name (which may conflict) or SnnEnn (i.e S12E34)")
     parser.add_argument("-S", "--server", help="Specify server. Defaults to {} $PLEX_SERVER".format(DEFAULT_URI), default=os.environ.get("PLEX_SERVER", DEFAULT_URI))
