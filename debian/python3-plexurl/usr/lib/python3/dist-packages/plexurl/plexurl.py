@@ -285,11 +285,11 @@ def main_show(server, args):
     """
 
     if args.name:
-        main_episode(server, args.name, args.episode, library=args.library, resolution=args.resolution)
+        main_episode(server, args.name, args.episode, library=args.library, args.resolution)
     else:
         selection = choose(["{}".format(show.title) for show in server.library.section("TV Shows").all()], "Select a show: ")
         if selection:
-            main_episode(server, selection, None, library=args.library, resolution=args.resolution)
+            main_episode(server, selection, None, library=args.library, args.resolution)
 
 def main_episode(server, show, episode, library=None, resolution="1280x720"):
     """ Convenience function for printing movie stream url
@@ -312,19 +312,18 @@ def main_episode(server, show, episode, library=None, resolution="1280x720"):
 
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
-    parser.add_argument("-h", "--help", help="Specify movie.", action="store_true")
     parser.add_argument("-m", "--movie", help="Specify movie.", action="store_true")
     parser.add_argument("-s", "--show", help="Specify show.", action="store_true")
-    parser.add_argument("--name", help="Name of movie or show. Use with -m or -s respectively. Omit to produce listing")
     parser.add_argument("-u", "--username", help="Specify non-default library name. Still requires -s or -m. $PLEX_LIBRARY", default=os.environ.get("PLEX_LIBRARY", None))
     parser.add_argument("-d", "--direct", help="Direct download.  Default returns a transcode url", action="store_true", default=False)
     parser.add_argument("-c", "--curl", help="curl output.  Default off.", action="store_true", default=False)
+    parser.add_argument("--name", help="Name of movie or show. Use with -m or -s respectively. Omit to produce listing")
     parser.add_argument("-e", "--episode", help="Specify episode. Get list of episodes by specifying show. Supports either full episode name (which may conflict) or SnnEnn (i.e S12E34)")
     parser.add_argument("-S", "--server", help="Specify server. Defaults to {} $PLEX_SERVER".format(DEFAULT_URI), default=os.environ.get("PLEX_SERVER", DEFAULT_URI))
     parser.add_argument("-u", "--username", help="Specify username. Used for Plex authentication. $PLEX_USERNAME", default=os.environ.get("PLEX_USERNAME", None))
     parser.add_argument("-p", "--password", help="Specify password. Provided for convenience only, preferred method is to omit this and enter password at the prompt. $PLEX_PASSWORD", default=os.environ.get("PLEX_PASSWORD", None))
     parser.add_argument("--servername", help="Specify server name. Used with -u above, for Plex authentication. $PLEX_SERVERNAME", default=os.environ.get("PLEX_SERVERNAME", None))
-    parser.add_argument("-r", "--resolution", help="Specify resolution. Should be of format WIDTHxHEIGHT. Defaults to 1280x720, or Plex's default", default="1280x720")
+    parser.add_argument("-r", "--resolution", help="Specify resolution. Should be of format WIDTHxHEIGHT. Defaults to 1280x720, or Plex's default")
     args = parser.parse_args()
     try:
         server = get_server(args.server, username=args.username, password=args.password, servername=args.servername)

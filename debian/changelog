@@ -1,0 +1,5 @@
+plexurl (0.1-1) unstable; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- lair repo key <problemsolver@openmailbox.org>  Thu, 17 Aug 2017 14:43:59 -0400
