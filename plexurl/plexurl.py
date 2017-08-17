@@ -304,11 +304,11 @@ def main_episode(server, show, episode, library=None, resolution="1280x720"):
     """
 
     if episode:
-        print(lookup_episode(server, show, episode, library=library).getStreamURL())
+        print(get_url(lookup_episode(server, show, selection, library=library), direct=args.direct, curl=args.curl))
     else:
         selection = choose(["S{}E{} {}".format(ep.parentIndex.zfill(2), ep.index.zfill(2), truncate(ep.title)) for ep in server.library.section("TV Shows").get(show).episodes()], "Select an episode: ")
         if selection:
-            print(lookup_episode(server, show, selection, library=library).getStreamURL(videoResolution=resolution))
+            print(get_url(lookup_episode(server, show, selection, library=library), direct=args.direct, curl=args.curl))
 
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
