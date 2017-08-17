@@ -285,13 +285,13 @@ def main_show(server, args):
     """
 
     if args.name:
-        main_episode(server, args.name, args.episode, args.resolution)
+        main_episode(server, args.name, args.episode, library=args.library, args.resolution)
     else:
         selection = choose(["{}".format(show.title) for show in server.library.section("TV Shows").all()], "Select a show: ")
         if selection:
-            main_episode(server, selection, None, args.resolution)
+            main_episode(server, selection, None, library=args.library, args.resolution)
 
-def main_episode(server, show, episode, resolution="1280x720"):
+def main_episode(server, show, episode, library=None, resolution="1280x720"):
     """ Convenience function for printing movie stream url
 
     :param server: Server object from get_server()
@@ -304,11 +304,11 @@ def main_episode(server, show, episode, resolution="1280x720"):
     """
 
     if episode:
-        print(lookup_episode(server, show, episode).getStreamURL())
+        print(lookup_episode(server, show, episode, library=library).getStreamURL())
     else:
         selection = choose(["S{}E{} {}".format(ep.parentIndex.zfill(2), ep.index.zfill(2), truncate(ep.title)) for ep in server.library.section("TV Shows").get(show).episodes()], "Select an episode: ")
         if selection:
-            print(lookup_episode(server, show, selection).getStreamURL(videoResolution=resolution))
+            print(lookup_episode(server, show, selection, library=library).getStreamURL(videoResolution=resolution))
 
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
