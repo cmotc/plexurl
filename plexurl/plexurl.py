@@ -202,7 +202,7 @@ def lookup_movie(server, movie, library=None):
             info("No results")
             return 50
 
-def lookup_episode(server, show, episode):
+def lookup_episode(server, show, episode, library=None):
     """ Retrieves episode object from specified server.
 
     :param server: Plex server object, probably returned by get_server()
@@ -214,13 +214,15 @@ def lookup_episode(server, show, episode):
     :returns: Episode object
     :rtype: plexapi.video.Episode
     """
+    if not library:
+        library="TV Shows"
 
     try:
-        show = show if type(show) is Show else server.library.section("TV Shows").get(show)
+        show = show if type(show) is Show else server.library.section(library).get(show)
     except NotFound:
-        results = server.library.section("TV Shows").search(show)
+        results = server.library.section(library).search(show)
         if results:
-            show = server.library.section("TV Shows").get(choose(results, "Select a show: "))
+            show = server.library.section(library).get(choose(results, "Select a show: "))
         else:
             info("No results")
             return 50
