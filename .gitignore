@@ -2,6 +2,8 @@
 *.m4a
 *.pyc
 .idea
+.pc
+debian
 build/
 dist/
 env/

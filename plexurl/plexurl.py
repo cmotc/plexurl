@@ -326,6 +326,7 @@ def main():
     parser.add_argument("-r", "--resolution", help="Specify resolution. Should be of format WIDTHxHEIGHT. Defaults to 1280x720, or Plex's default", default="1280x720")
     args = parser.parse_args()
     try:
+        print(args.server, args.username, args.password, args.servername)
         server = get_server(args.server, username=args.username, password=args.password, servername=args.servername)
         if type(server) is not PlexServer:
             info("Aborting.")
