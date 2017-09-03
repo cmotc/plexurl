@@ -1,3 +1,0 @@
-python:Versions=2.7
-python:Provides=python2.7-plexurl
-python:Depends=python-plexapi, python-prettytable, python:any, python:any (<< 2.8), python:any (>= 2.6~), python:any (>= 2.7.5-5~), python:any (>= 2.7~)

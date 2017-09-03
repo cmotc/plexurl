@@ -1,1 +1,0 @@
-python3:Depends=python3-plexapi, python3-prettytable, python3:any, python3:any (>= 3.2~), python3:any (>= 3.3.2-2~)
