@@ -1,24 +1,26 @@
 include /etc/plexurl.cfg
 
-dummy:
+dummy: build test
 
 build:
-	docker build -t plexurl .
+	docker build --force-rm -t plexurl .
 
 run:
-	docker rm -f plexurl;\
-	docker run --name plexurl -t plexurl plexurl \
+	docker rm -f plexurl; \
+	docker run -d --name plexurl -t plexurl; \
+	docker exec -t plexurl plexurl \
 		--server $(server) \
 		--username $(username) \
 		--password $(password) \
 		--servername $(servername)
 
 test:
-	docker build -f Dockerfile.test -t plexurl-test .
+	docker build --force-rm -f Dockerfile.test -t plexurl-test .
 
 run-test:
 	docker rm -f plexurl-test;\
-	docker run --name plexurl-test -t plexurl-test plexurl \
+	docker run -d --name plexurl-test -t plexurl-test; \
+	docker exec -t plexurl-test plexurl \
 		--server $(server) \
 		--username $(username) \
 		--password $(password) \
@@ -38,3 +40,11 @@ pkg:
 
 deb:
 	debuild -us -uc
+
+install:
+	pip3 install --exists-action w -e .
+
+uninstall:
+	pip3 uninstall .
+	yes | pip3 uninstall -r requirements.txt
+

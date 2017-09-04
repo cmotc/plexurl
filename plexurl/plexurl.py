@@ -267,11 +267,12 @@ def main_movie(server, args):
     :param args: argparse.ArgumentParser().parse_args object
     :returns: Return code
     """
-
+    if args.section:
+        args_section = "Movies"
     if args.name:
         print(get_url(lookup_movie(server, args.name, section=args.section), direct=args.direct, curl=args.curl))
     else:
-        selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section(args.section).all()], "Select a movie: ")
+        selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section(args_section).all()], "Select a movie: ")
         if selection:
             print(get_url(lookup_movie(server, selection, section=args.section), direct=args.direct, curl=args.curl))
 
@@ -326,6 +327,7 @@ def main():
     parser.add_argument("-r", "--resolution", help="Specify resolution. Should be of format WIDTHxHEIGHT. Defaults to 1280x720, or Plex's default", default="1280x720")
     args = parser.parse_args()
     try:
+        print("using these args")
         print(args.server, args.username, args.password, args.servername)
         server = get_server(args.server, username=args.username, password=args.password, servername=args.servername)
         if type(server) is not PlexServer:

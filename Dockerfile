@@ -5,7 +5,7 @@ RUN adduser -D -h /home/plexurl plexurl
 RUN chown -R plexurl:plexurl /home/plexurl && umask 002 /home/plexurl
 COPY . /home/plexurl/plexurl/
 WORKDIR /home/plexurl/plexurl
-RUN pip3 install -e .
+RUN pip3 install --exists-action w -e .
 USER plexurl
 CMD [ "darkhttpd", "/home/plexurl/" ]
 
