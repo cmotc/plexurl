@@ -293,7 +293,7 @@ def main_show(server, args):
     if args.name:
         main_episode(server, args.name, args.episode, section=args.section, resolution=args.resolution)
     else:
-        selection = choose(["{}".format(show.title) for show in server.library.section(section).all()], "Select a show: ")
+        selection = choose(["{}".format(show.title) for show in server.library.section(args.section).all()], "Select a show: ")
         if selection:
             main_episode(server, selection, None, section=args.section, resolution=args.resolution)
 

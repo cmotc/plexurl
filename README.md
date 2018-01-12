@@ -13,8 +13,8 @@ Usage
     optional arguments:
       -h, --help            show this help message and exit
       -m, --movie           Specify movie.
+      -l, --section         Specify a library section manually
       -d, --direct          Direct download. Default returns a transcode url
-      -c, --curl            curl output. Default off.
       -s, --show            Specify show.
       --name NAME           Name of movie or show. Use with -m or -s respectively.
                             Omit to produce listing

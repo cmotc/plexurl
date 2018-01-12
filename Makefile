@@ -1,16 +1,16 @@
 include /etc/plexurl.cfg
 
+export section ='Notflix TV Shows'
 export PIP = pip3
 export DIRECT = -d
 #export name = Zombieland
 
 define PLEX_COMMAND
-plexurl -m -l $(section) $(DIRECT) \
+plexurl -s -l $(section) $(DIRECT) \
 	--server $(server) \
 	--username $(username) \
 	--password $(password) \
-	--servername $(servername) \
-	--name $(name)
+	--servername $(servername)
 endef
 
 export PLEX_COMMAND
@@ -25,13 +25,13 @@ build: .deps
 
 run:
 	docker rm -f plexurl; \
-	docker run --name plexurl -t eyedeekay/plexurl "$(PLEX_COMMAND)"
+	docker run --name plexurl -i -t eyedeekay/plexurl "$(PLEX_COMMAND)"
 
 try: build run
 
 run-test:
 	docker rm -f plexurl-get; \
-	docker run --name plexurl-get -t eyedeekay/plexurl "$(PLEX_COMMAND)"
+	docker run --name plexurl-get -i -t eyedeekay/plexurl "$(PLEX_COMMAND)"
 
 pkg:
 	rm -r debian
