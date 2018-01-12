@@ -2,7 +2,7 @@ include /etc/plexurl.cfg
 
 export PIP = pip3
 export DIRECT = -d
-export name = Zombieland
+#export name = Zombieland
 
 define PLEX_COMMAND
 plexurl -m -l $(section) $(DIRECT) \
