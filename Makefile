@@ -5,12 +5,15 @@ export PIP = pip3
 export DIRECT = -d
 #export name = Zombieland
 
+#export FILENAME = --name $(name)
+#export SERVERNAME --servername $(servername)
+
 define PLEX_COMMAND
 plexurl -s -l $(section) $(DIRECT) \
 	--server $(server) \
 	--username $(username) \
 	--password $(password) \
-	--servername $(servername)
+	$(SERVERNAME) $(FILENAME)
 endef
 
 export PLEX_COMMAND

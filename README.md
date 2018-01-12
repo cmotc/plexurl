@@ -6,7 +6,7 @@ Browse Plex from CLI. Returns transcoding streaming urls to stdout
 Usage
 -----
 
-    usage: plexurl [-h] [-m] [-d] [-c] [-s] [--name NAME] [-e EPISODE] [-S SERVER]
+    usage: plexurl [-h] [-m] [-d] [-c] [-l] [-s] [--name NAME] [-e EPISODE] [-S SERVER]
                    [-u USERNAME] [-p PASSWORD] [--servername SERVERNAME]
                    [-r RESOLUTION]
 
