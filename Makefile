@@ -1,33 +1,37 @@
 include /etc/plexurl.cfg
 
-dummy: build test
+export PIP = pip3
+export DIRECT = -d
+export name = Zombieland
 
-build:
-	docker build --force-rm -t plexurl .
+define PLEX_COMMAND
+plexurl -m -l $(section) $(DIRECT) \
+	--server $(server) \
+	--username $(username) \
+	--password $(password) \
+	--servername $(servername) \
+	--name $(name)
+endef
+
+export PLEX_COMMAND
+
+dummy: build
+
+.deps:
+	docker build -f Dockerfile.deps -t eyedeekay/plexurl:deps .; touch .deps
+
+build: .deps
+	docker build -f Dockerfile -t eyedeekay/plexurl .
 
 run:
 	docker rm -f plexurl; \
-	docker run -d --name plexurl -t plexurl; \
-	docker exec -t plexurl plexurl \
-		--server $(server) \
-		--username $(username) \
-		--password $(password) \
-		--servername $(servername)
+	docker run --name plexurl -t eyedeekay/plexurl "$(PLEX_COMMAND)"
 
-test:
-	docker build --force-rm -f Dockerfile.test -t plexurl-test .
+try: build run
 
 run-test:
-	docker rm -f plexurl-test;\
-	docker run -d --name plexurl-test -t plexurl-test; \
-	docker exec -t plexurl-test plexurl \
-		--server $(server) \
-		--username $(username) \
-		--password $(password) \
-		--servername $(servername)
-
-docker:
-	docker build -t plexurl .
+	docker rm -f plexurl-get; \
+	docker run --name plexurl-get -t eyedeekay/plexurl "$(PLEX_COMMAND)"
 
 pkg:
 	rm -r debian
@@ -42,9 +46,37 @@ deb:
 	debuild -us -uc
 
 install:
-	pip3 install --exists-action w -e .
+	"$(PIP)" install --exists-action w -e .
 
 uninstall:
-	pip3 uninstall .
-	yes | pip3 uninstall -r requirements.txt
+	"$(PIP)" uninstall .
+	yes | "$(PIP)" uninstall -r requirements.txt
 
+reinstall: uninstall install
+
+srun:
+	plexurl -m -l "$(section)" \
+		--server "$(server)" \
+		--username "$(username)" \
+		--password "$(password)" \
+		--servername "$(servername)" \
+		--name $(name)
+
+2run:
+	python2 plexurl/plexurl.py -m -l "$(section)" "$(DIRECT)" \
+		--server "$(server)" \
+		--username "$(username)" \
+		--password "$(password)" \
+		--servername "$(servername)" \
+		--name $(name)
+
+3run:
+	python3 plexurl/plexurl.py -m -l "$(section)" "$(DIRECT)" \
+		--server "$(server)" \
+		--username "$(username)" \
+		--password "$(password)" \
+		--servername "$(servername)" \
+		--name $(name)
+
+url:
+	make -s 3run | tee url

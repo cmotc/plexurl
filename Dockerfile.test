@@ -1,9 +1,0 @@
-FROM alpine:3.6
-RUN apk update
-RUN apk add python3 darkhttpd git
-RUN adduser -D -h /home/plexurl plexurl
-RUN chown -R plexurl:plexurl /home/plexurl && umask 002 /home/plexurl
-WORKDIR /home/plexurl/
-RUN pip3 install plexurl
-USER plexurl
-CMD [ "darkhttpd", "/home/plexurl/" ]

@@ -241,7 +241,7 @@ def lookup_episode(server, show, episode, section=None):
             return 50
 
 
-def get_url(movie, direct=False, curl=False, section="Movies"):
+def get_url(movie, direct=False, section="Movies"):
     """movie = lookup_movie(server, args.name)"""
 
     if not direct:
@@ -254,27 +254,32 @@ def get_url(movie, direct=False, curl=False, section="Movies"):
         if str(movie.year) not in fname:
           fname, fext = os.path.splitext(fname)
           fname = "{}-{}{}".format(fname, movie.year, fext)
-        if curl:
-            return("curl '{}' -o '{}'".format(i.server.url(i.key), fname))
-        return i.server.url(i.key)
+        print(movie.title)
+        #return i.server.url(i.key)
+        return i.key
 
 
 def main_movie(server, args):
     """ Convenience function for printing movie stream url
 
-    :param server: Server object from get_server()
+    :param server:Server object from get_server()
     :type server: plexapi.server.PlexServer
     :param args: argparse.ArgumentParser().parse_args object
     :returns: Return code
     """
-    if args.section:
-        args_section = "Movies"
-    if args.name:
-        print(get_url(lookup_movie(server, args.name, section=args.section), direct=args.direct, curl=args.curl))
+    if not args.section:
+        argssection="Movies"
     else:
-        selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section(args_section).all()], "Select a movie: ")
+        argssection=args.section
+
+    print(argssection)
+
+    if args.name:
+        print(get_url(lookup_movie(server, args.name, section=args.section), direct=args.direct, section=args.section))
+    else:
+        selection = choose(["{}".format(movie.title.encode('utf-8')) for movie in server.library.section(args.section).all()], "Select a movie: ")
         if selection:
-            print(get_url(lookup_movie(server, selection, section=args.section), direct=args.direct, curl=args.curl))
+            print(get_url(lookup_movie(server, selection, section=args.section), direct=args.direct, section=args.section))
 
 def main_show(server, args):
     """ Convenience function for printing show names
@@ -305,11 +310,11 @@ def main_episode(server, show, episode, section=None, resolution="1280x720"):
     """
 
     if episode:
-        print(get_url(lookup_episode(server, show, selection, section=section), direct=args.direct, curl=args.curl))
+        print(get_url(lookup_episode(server, show, selection, section=section), direct=args.direct))
     else:
         selection = choose(["S{}E{} {}".format(ep.parentIndex.zfill(2), ep.index.zfill(2), truncate(ep.title)) for ep in server.library.section(section).get(show).episodes()], "Select an episode: ")
         if selection:
-            print(get_url(lookup_episode(server, show, selection, section=section), direct=args.direct, curl=args.curl))
+            print(get_url(lookup_episode(server, show, selection, section=section), direct=args.direct))
 
 def main():
     parser = argparse.ArgumentParser(prog="plexurl")
@@ -318,7 +323,6 @@ def main():
     parser.add_argument("-l", "--section", help="Specify library if non-default name. $PLEX_LIBRARY", default=os.environ.get("PLEX_LIBRARY", None))
     parser.add_argument("--name", help="Name of movie or show. Use with -m or -s respectively. Omit to produce listing")
     parser.add_argument("-d", "--direct", help="Direct download.  Default returns a transcode url", action="store_true", default=False)
-    parser.add_argument("-c", "--curl", help="curl output.  Default off.", action="store_true", default=False)
     parser.add_argument("-e", "--episode", help="Specify episode. Get list of episodes by specifying show. Supports either full episode name (which may conflict) or SnnEnn (i.e S12E34)")
     parser.add_argument("-S", "--server", help="Specify server. Defaults to {} $PLEX_SERVER".format(DEFAULT_URI), default=os.environ.get("PLEX_SERVER", DEFAULT_URI))
     parser.add_argument("-u", "--username", help="Specify username. Used for Plex authentication. $PLEX_USERNAME", default=os.environ.get("PLEX_USERNAME", None))
@@ -328,7 +332,9 @@ def main():
     args = parser.parse_args()
     try:
         print("using these args")
-        print(args.server, args.username, args.password, args.servername)
+        print("--server", args.server, "--username",  args.username, "--password",  args.password, "--servername",  args.servername, "--section", args.section)
+        print("show:", args.show)
+        print("movie", args.movie)
         server = get_server(args.server, username=args.username, password=args.password, servername=args.servername)
         if type(server) is not PlexServer:
             info("Aborting.")
